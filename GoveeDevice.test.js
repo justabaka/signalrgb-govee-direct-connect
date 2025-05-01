@@ -47,11 +47,13 @@ export default class GoveeDevice
         this.port = 4003;
         this.statusPort = 4001;
         this.enabled = true;
+        this.renderingDisabledUntil = 0;
 
         this.razerOn = false;
 
         this.lastRender = 0;
         this.lastStatus = 0;
+        this.defaultAlertSuppressionDuration = 600;
         this.lastDeviceDataCheck = 0;
         this.lastSingleColor = '';
 
@@ -82,6 +84,22 @@ export default class GoveeDevice
                         this.log(message.data);
                         break;
                 }
+            }
+            else if (goveeResponse.hasOwnProperty('alertActive'))
+            {
+                switch(goveeResponse.alertActive)
+                    {
+                        case "true":
+                            this.renderingDisabledUntil = Date.now() + this.defaultAlertSuppressionDuration;
+                            this.log('Disabling rendering due to an alert...');
+                            break;
+                        case "false":
+                            this.renderingDisabledUntil = 0;
+                            this.log('Re-enabling rendering!');
+                            break;
+                        default:
+                            break;
+                    }
             }
         } catch(err)
         {
@@ -160,7 +178,7 @@ export default class GoveeDevice
             service.log(text);
         } else
         {
-            device.log(text)
+            device.log(text);
         }
     }
 
@@ -475,7 +493,7 @@ export default class GoveeDevice
 
     sendRGB(colors, now, frameDelay)
     {
-        if (this.enabled)
+        if (this.enabled && now - this.renderingDisabledUntil >= 0)
         {
             if (this.split == 2)
             {

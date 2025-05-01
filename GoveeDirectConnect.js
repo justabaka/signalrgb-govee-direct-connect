@@ -194,9 +194,31 @@ export function DiscoveryService()
         {
             let goveeController = this.GoveeDeviceControllers[ip];
             goveeController.relaySocketMessage(value);
-        } else
+        }
+        else
         {
-            service.log(`Cannot find controller for ${ip}`);
+            try
+            {
+                let goveeResponse = JSON.parse(value.data);
+
+                if (goveeResponse.hasOwnProperty('alertActive') && goveeResponse.hasOwnProperty('controller_ip'))
+                {
+                    service.log('Received alertActive:' + JSON.stringify(goveeResponse));
+                    if (this.GoveeDeviceControllers.hasOwnProperty(goveeResponse.controller_ip))
+                    {
+                        service.log('relaying socket message to ' + goveeResponse.controller_ip)
+                        let goveeController = this.GoveeDeviceControllers[goveeResponse.controller_ip];
+                        goveeController.relaySocketMessage(value);
+                    }
+                    
+                }
+                else
+                {
+                    service.log(`Cannot find controller for ${ip}`);
+                }
+            } catch (error) {
+                service.log(`Cannot parse JSON or find controller for ${ip}: ${error}`);
+            }
         }
 	};
 
