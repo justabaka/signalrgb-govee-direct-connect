@@ -199,6 +199,7 @@ export function DiscoveryService()
         {
             try
             {
+                // HACK: this code is by no means beautiful, optimized or secure (it is absolutely not, has to be rewritten)
                 let goveeResponse = JSON.parse(value.data);
 
                 if (goveeResponse.hasOwnProperty('alertActive') && goveeResponse.hasOwnProperty('controller_ip'))
