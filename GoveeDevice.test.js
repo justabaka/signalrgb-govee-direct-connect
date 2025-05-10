@@ -529,6 +529,9 @@ export default class GoveeDevice
             // Every 10 seconds check the status
             if (this.id !== null && now - this.lastStatus > 10 * 1000)
             {
+                // HACK: sometimes a device never turns on after PC wake up from sleep/hibernation so it's easier just to send turnOn commands every X seconds
+                this.turnOn();
+
                 this.getStatus();
                 this.lastStatus = now;
                 return
