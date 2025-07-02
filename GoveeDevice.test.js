@@ -53,7 +53,7 @@ export default class GoveeDevice
 
         this.lastRender = 0;
         this.lastStatus = 0;
-        this.defaultAlertSuppressionDuration = 600;
+        this.defaultAlertSuppressionDurationMs = 1000;
         this.lastDeviceDataCheck = 0;
         this.lastSingleColor = '';
 
@@ -90,7 +90,7 @@ export default class GoveeDevice
                 switch(goveeResponse.alertActive)
                     {
                         case "true":
-                            this.renderingDisabledUntil = Date.now() + this.defaultAlertSuppressionDuration;
+                            this.renderingDisabledUntil = Date.now() + this.defaultAlertSuppressionDurationMs;
                             this.log('Disabling rendering due to an alert...');
                             break;
                         case "false":
